@@ -60,10 +60,15 @@
                 <form action="{{ route('ads.messages.store', $ad) }}" method="POST">
                     @csrf
                     <textarea name="content" required></textarea>
-                    <button type="submit">Stuur bericht</button>
-                    @if (session('success'))
-                        <p class="text-green-600">{{ session('success') }}</p>
-                    @endif
+                    <@auth <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Stuur bericht</button>
+                        @endauth
+
+                        @guest
+                            <button type="button" onclick="window.location='{{ route('login') }}'"
+                                class="bg-blue-600 text-white px-4 py-2 rounded">
+                                Stuur bericht
+                            </button>
+                        @endguest
                 </form>
 
                 <p class=""> {{ $ad->user->city }}</p>

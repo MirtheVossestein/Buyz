@@ -113,7 +113,7 @@ class AdController extends Controller
 
     public function index()
     {
-        $ads = Ad::with('images')->get(); 
+    $ads = Ad::where('status', '!=', 'verkocht')->get();
         return view('ads.ads', compact('ads'));
     }
 
@@ -140,7 +140,6 @@ public function buy($id)
 
 
 
-
 public function sendQuestion(Request $request, $id)
 {
     $request->validate([
@@ -150,25 +149,49 @@ public function sendQuestion(Request $request, $id)
     $ad = Ad::with('user')->findOrFail($id);
     $owner = $ad->user;
 
-    // Vind of maak een conversatie tussen de huidige gebruiker en de eigenaar
     $conversation = Conversation::firstOrCreate([
         'user_one_id' => min(auth()->id(), $owner->id),
         'user_two_id' => max(auth()->id(), $owner->id),
     ]);
 
-    // Sla het bericht op met ad_id
     Message::create([
         'sender_id' => auth()->id(),
         'receiver_id' => $owner->id,
         'content' => $request->question,
         'conversation_id' => $conversation->id,
-        'ad_id' => $ad->id, // <-- dit is cruciaal
+        'ad_id' => $ad->id, 
     ]);
 
-    // Verzend e-mail
     Mail::to($owner->email)->send(new AdQuestionMail($ad, $request->question, auth()->user()));
 
     return redirect()->back()->with('success', 'Je vraag is succesvol verzonden!');
+}
+
+public function updateStatus(Request $request, Ad $ad)
+{
+    if ($ad->user_id !== auth()->id()) {
+        abort(403, 'Je bent geen eigenaar van deze advertentie.');
+    }
+
+    $request->validate([
+        'status' => 'required|in:te_koop,verkocht,gereserveerd',
+    ]);
+
+    $ad->status = $request->status;
+    $ad->save();
+
+    return redirect()->back()->with('success', 'Status advertentie is bijgewerkt.');
+}
+
+public function myPurchases()
+{
+    $user = auth()->user();
+
+    $purchasedAds = Ad::where('owner_id', $user->id)
+                      ->where('status', 'verkocht')
+                      ->get();
+
+    return view('profile.my-purchases', compact('purchasedAds'));
 }
 
 }

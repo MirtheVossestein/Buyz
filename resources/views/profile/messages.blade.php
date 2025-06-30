@@ -3,7 +3,7 @@
 @section('title', 'Berichten Overzicht')
 
 @section('content')
-<h1>Mijn Conversaties</h1>
+<h1>Mijn Gesprekken</h1>
 
 @if ($conversations->isEmpty())
     <p>Je hebt nog geen gesprekken.</p>

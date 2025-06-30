@@ -14,6 +14,7 @@
             <thead>
                 <tr>
                     <th>Advertenties</th>
+                    <th>Status</th>
                     <th class="text-end">Wijzigingen</th>
                 </tr>
             </thead>
@@ -21,14 +22,13 @@
                 @foreach ($ads as $ad)
                     <tr>
                         <td>{{ $ad->title }}</td>
+                        <td>{{ $ad->status }} </td>
                         <td class="text-end">
-                            <!-- Wijzigen knop -->
                             <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
                                 data-bs-target="#editModal-{{ $ad->id }}">
                                 Wijzigen
                             </button>
 
-                            <!-- Delete formulier -->
                             <form action="{{ route('ads.destroy', $ad) }}" method="POST" class="d-inline"
                                 onsubmit="return confirm('Weet je zeker dat je deze advertentie wilt verwijderen?');">
                                 @csrf

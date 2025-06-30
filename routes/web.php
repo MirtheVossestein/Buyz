@@ -98,3 +98,12 @@ Route::post('/ads/{ad}/messages', [MessageController::class, 'storeFromAd'])
     ->middleware('auth');
 
     Route::post('messages/{conversation}', [MessageController::class, 'store'])->name('conversations.messages.store');
+
+
+    // asksysteem
+
+    Route::delete('/messages/{message}', [MessageController::class, 'destroy'])
+    ->name('messages.destroy')
+    ->middleware('auth');
+
+    Route::patch('/ads/{ad}/status', [AdController::class, 'updateStatus'])->name('ads.updateStatus');
