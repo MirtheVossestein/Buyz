@@ -167,6 +167,8 @@
                 </p>
                 <p class=""> {{ $user->phone }}</p>
 
+                {{-- Kaartje locatie verkoper --}}
+
                 <div class="mt-6">
                     <p class="text-2xl font-semibold mb-4">Reviews van klanten over deze verkoper</p>
 

@@ -42,7 +42,7 @@
         </select>
 
         <div class="mb-3">
-            <label for="images">Upload foto's (min 1, max 6):</label>
+            <label for="images">Upload foto's (min 1, max 5):</label>
             <input type="file" name="images[]" multiple accept="image/*" required>
         </div>
 

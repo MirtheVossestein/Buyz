@@ -19,6 +19,28 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </head>
+@if (!request()->cookie('cookies_accepted'))
+    <div id="cookie-banner" class="fixed bottom-0 left-0 right-0 bg-gray-800 text-white p-4 z-50">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <span class="text-sm sm:text-base">
+                We gebruiken cookies om je ervaring te verbeteren. Door verder te gaan accepteer je ons cookiebeleid.
+            </span>
+
+            <div class="flex items-center gap-3">
+                <a href="{{ route('cookie.info') }}" class="text-blue-300 hover:underline text-sm">
+                    Meer informatie
+                </a>
+
+                <form method="POST" action="{{ route('cookie.accept') }}">
+                    @csrf
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded">
+                        Akkoord
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+@endif
 
 <body>
     <nav class="w-full h-[5rem] bg-[#00a9a3] flex items-center justify-between px-4">
@@ -48,7 +70,8 @@
                                     advertenties</a></li>
                             <li><a href="{{ route('profile.messages') }}" class="block py-2 hover:bg-gray-100">Mijn
                                     berichten</a></li>
-                            <li><a href="{{ route('profile.reviews.index') }}" class="block py-2 hover:bg-gray-100">Mijn
+                            <li><a href="{{ route('profile.reviews.index') }}"
+                                    class="block py-2 hover:bg-gray-100">Mijn
                                     reviews</a></li>
                             <li>
                                 <form action="{{ route('logout') }}" method="POST">

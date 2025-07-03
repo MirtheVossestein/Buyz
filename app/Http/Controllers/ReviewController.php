@@ -15,7 +15,7 @@ class ReviewController extends Controller
         $request->validate([
             'ad_id' => 'required|exists:ads,id',
             'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'nullable|string',
+            'comment' => 'nullable|string|max:50',
         ]);
 
         $ad = Ad::findOrFail($request->ad_id);
@@ -38,7 +38,7 @@ class ReviewController extends Controller
         Review::create([
             'ad_id' => $ad->id,
             'reviewer_id' => Auth::id(),
-            'reviewee_id' => $ad->user_id, // De verkoper
+            'reviewee_id' => $ad->user_id,
             'rating' => $request->rating,
             'comment' => $request->comment,
         ]);

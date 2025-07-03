@@ -16,6 +16,11 @@ use App\Models\Conversation;
 
 class AdController extends Controller
 {
+
+    public function __construct()
+{
+    $this->middleware('auth')->except(['index', 'show']);
+}
     public function create()
     {
         $categories = Category::all();

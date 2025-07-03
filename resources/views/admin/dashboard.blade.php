@@ -21,11 +21,16 @@
             <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button"
                 role="tab" aria-controls="reviews" aria-selected="false">Reviews</button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats" type="button"
+                role="tab" aria-controls="stats" aria-selected="false">Statistieken</button>
+        </li>
     </ul>
 
-    {{-- Admin tab --}}
+    {{-- Tabs --}}
     <div class="tab-content" id="dashboardTabsContent">
         <div class="tab-pane fade show active" id="admin" role="tabpanel" aria-labelledby="admin-tab">
+            {{-- Admin tab --}}
             <h2>Actieve Admins</h2>
             <table class="table table-bordered">
                 <thead>
@@ -79,7 +84,7 @@
             </table>
         </div>
 
-        {{-- Revies tab --}}
+        {{-- Reviews tab --}}
         <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
             <h2>Geschreven Reviews</h2>
             <table class="table table-bordered">
@@ -158,10 +163,57 @@
                                 </div>
                             </div>
                         </div>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
-        @endforeach
-        </tbody>
-        </table>
-    </div>
+        {{-- Stats tab --}}
+        <div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats-tab">
+            <h2>Statistieken</h2>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <canvas id="usersChart"></canvas>
+                </div>
+                <div class="col-md-6">
+                    <canvas id="adsChart"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection
+
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const usersCtx = document.getElementById('usersChart').getContext('2d');
+    const adsCtx = document.getElementById('adsChart').getContext('2d');
+
+    const monthLabels = ['Jan', 'Feb', 'Mrt', 'Apr', 'Mei', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'];
+
+    new Chart(usersCtx, {
+        type: 'bar',
+        data: {
+            labels: monthLabels,
+            datasets: [{
+                label: 'Nieuwe Gebruikers per Maand',
+                data: @json($usersData),
+                backgroundColor: 'rgba(54, 162, 235, 0.6)'
+            }]
+        },
+    });
+
+    new Chart(adsCtx, {
+        type: 'bar',
+        data: {
+            labels: monthLabels,
+            datasets: [{
+                label: 'Advertenties per Maand',
+                data: @json($adsData),
+                backgroundColor: 'rgba(255, 99, 132, 0.6)'
+            }]
+        },
+    });
+</script>
+@endpush

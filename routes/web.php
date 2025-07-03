@@ -7,20 +7,21 @@ use App\Http\Controllers\AdController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\AdminController;
+use Illuminate\Support\Facades\Cookie;
 use App\Http\Middleware\IsAdmin;
+use App\Http\Controllers\TwoFactorController;
+use App\Http\Controllers\ProfileController;
 
 
 
 
 //home 
 
-
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 
 
 // register
-
 Route::get('/register', [RegisterController::class, 'show'])->name('register.show');
 Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
 
@@ -44,9 +45,15 @@ Route::get('/contact', function () {
 })->name('contact');
 
 // profiel pagina
-Route::get('/profiel', function () {
-    return view('profile.profile');
-})->name('profile.show');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profiel', function () {
+        return view('profile.profile');
+    })->name('profile.show');
+
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile/ads', [AdController::class, 'myAds'])->name('profile.ads');
+    Route::get('/mijn-advertenties', [AdController::class, 'myAds'])->name('ads.my');
+});
 
 // mijn advertenties
 Route::get('/mijn-advertenties', function () {
@@ -59,10 +66,6 @@ Route::post('/ads', [AdController::class, 'store'])->name('ads.store');
 
 
 
-// Mijn aankopen
-Route::get('/mijn-aankopen', function () {
-    return view('profile.my-purchases');
-})->name('profile.purchases');
 
 
 
@@ -94,12 +97,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/messages', [MessageController::class, 'index'])->name('profile.messages');
 });
 
-Route::get('/messages', [MessageController::class, 'index'])->middleware('auth')->name('messages.index');
 
 
+// messages 
 Route::middleware('auth')->group(function () {
-    Route::get('/messages', [MessageController::class, 'index'])->name('messages.index'); // overzicht
-    Route::get('/messages/{conversation}', [MessageController::class, 'show'])->name('messages.show'); // detail gesprek
+    Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
+    Route::get('/messages/{conversation}', [MessageController::class, 'show'])->name('messages.show');
 
 });
 
@@ -145,27 +148,43 @@ Route::get('/conversations/{conversation}/messages', [MessageController::class, 
 Route::put('/admin/ads/{ad}', [AdController::class, 'adminUpdate'])->name('admin.ads.update');
 
 
-// dashboard admin
-Route::middleware(['auth', \App\Http\Middleware\IsAdmin::class])->group(function () {
-    Route::get('/admin/dashboard', [AdminController::class, 'adminDashboard'])->name('admin.dashboard');
-    Route::post('/admin/make-admin/{user}', [AdminController::class, 'makeAdmin'])->name('admin.make-admin');
-    Route::post('/admin/remove-admin/{user}', [AdminController::class, 'removeAdmin'])->name('admin.remove-admin');
-    Route::put('/admin/ads/{ad}', [AdController::class, 'adminUpdate'])->name('admin.ads.update');
-    Route::get('/admin/ads/{ad}', [AdController::class, 'adminShow'])->name('admin.ads.show');
-    Route::resource('admin/reviews', ReviewController::class)->except(['create', 'store', 'show']);
+// admin dashboard
+Route::middleware(['auth', \App\Http\Middleware\IsAdmin::class])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::get('dashboard', [AdminController::class, 'adminDashboard'])->name('dashboard');
 
+        // Ads
+        Route::get('ads/{ad}', [AdController::class, 'adminShow'])->name('ads.show');
+        Route::put('ads/{ad}', [AdController::class, 'adminUpdate'])->name('ads.update');
+
+        // admins beheren
+        Route::post('make-admin/{user}', [AdminController::class, 'makeAdmin'])->name('make-admin');
+        Route::post('remove-admin/{user}', [AdminController::class, 'removeAdmin'])->name('remove-admin');
+
+        // reviews beheren
+        Route::get('reviews', [AdminController::class, 'adminIndex'])->name('reviews.index');
+        Route::get('reviews/{review}/edit', [AdminController::class, 'adminEdit'])->name('reviews.edit');
+        Route::put('reviews/{review}', [AdminController::class, 'adminUpdate'])->name('reviews.update');
+        Route::delete('reviews/{review}', [AdminController::class, 'adminDestroy'])->name('reviews.destroy');
+    });
+
+// two step auth
+Route::get('/2fa', [TwoFactorController::class, 'index'])->name('2fa.index');
+Route::post('/2fa', [TwoFactorController::class, 'store'])->name('2fa.store');
+
+
+Route::middleware(['auth', \App\Http\Middleware\EnsureTwoFactorIsVerified::class])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index']);
 });
 
 
-// admin review beheer
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('dashboard', [AdminController::class, 'adminDashboard'])->name('dashboard');
+// cookie
+Route::post('/cookie-accept', function () {
+    return redirect()->back()->withCookie(cookie('cookies_accepted', true, 60 * 24 * 30));
+})->name('cookie.accept');
 
-    Route::get('reviews', [AdminController::class, 'adminIndex'])->name('reviews.index');
-    Route::get('reviews/{review}/edit', [AdminController::class, 'adminEdit'])->name('reviews.edit');
-    Route::put('reviews/{review}', [AdminController::class, 'adminUpdate'])->name('reviews.update');
-    Route::delete('reviews/{review}', [AdminController::class, 'adminDestroy'])->name('reviews.destroy');
-
-    Route::post('make-admin/{user}', [AdminController::class, 'makeAdmin'])->name('make-admin');
-    Route::post('remove-admin/{user}', [AdminController::class, 'removeAdmin'])->name('remove-admin');
-});
+Route::get('/cookiebeleid', function () {
+    return view('cookie.info');
+})->name('cookie.info');
