@@ -21,20 +21,20 @@ class MessageController extends Controller
         return view('profile.messages', compact('conversations'));
     }
 
-   public function show(Conversation $conversation)
-{
-    if (!in_array(auth()->id(), [$conversation->user_one_id, $conversation->user_two_id])) {
-        abort(403);
+    public function show(Conversation $conversation)
+    {
+        if (!in_array(auth()->id(), [$conversation->user_one_id, $conversation->user_two_id])) {
+            abort(403);
+        }
+
+        $partner = $conversation->user_one_id === auth()->id() ? $conversation->userTwo : $conversation->userOne;
+
+        $conversation->load('messages.sender');
+
+        $advertentie = $conversation->ad;
+
+        return view('messages.conversation', compact('conversation', 'partner', 'advertentie'));
     }
-
-    $partner = $conversation->user_one_id === auth()->id() ? $conversation->userTwo : $conversation->userOne;
-
-    $conversation->load('messages.sender');
-
-    $advertentie = $conversation->ad;
-
-    return view('messages.conversation', compact('conversation', 'partner', 'advertentie'));
-}
 
 
     public function store(Request $request, Conversation $conversation)
@@ -114,7 +114,49 @@ class MessageController extends Controller
         return back()->with('success', 'Bericht verwijderd.');
     }
 
+    // notificatie  berichten
+    public function openConversation($conversationId)
+{
+    $conversation = Conversation::findOrFail($conversationId);
+
+    $conversation->messages()
+        ->where('receiver_id', auth()->id())  
+        ->where('is_read', 0)                  
+        ->update(['is_read' => 1]);
+
+    return view('conversations.show', compact('conversation'));
+}
+
+
+public function sendReviewInvite(Request $request)
+{
+    $conversationId = 2;      // Bijvoorbeeld uit $request of logica
+    $senderId = auth()->id(); // Of 1 als vaste waarde
+    $receiverId = $request->input('receiver_id'); // Ontvanger ophalen uit de request
+
+    // Check of receiver_id bestaat!
+    if (!$receiverId) {
+        return response()->json(['error' => 'Receiver ID is verplicht'], 400);
+    }
+
+    // Bericht maken
+    Message::create([
+        'conversation_id' => $conversationId,
+        'sender_id' => $senderId,
+        'receiver_id' => $receiverId,
+        'content' => '[review_invite]',
+    ]);
+
+    return response()->json(['success' => 'Bericht verzonden']);
+}
 
 
 
+// conversation autoreloader
+public function fetch(Conversation $conversation)
+{
+    $messages = $conversation->messages()->with('sender')->latest()->take(50)->get()->reverse()->values();
+
+    return response()->json($messages);
+}
 }

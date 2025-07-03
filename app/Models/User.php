@@ -26,6 +26,8 @@ class User extends Authenticatable
         'zipcode',
         'city',
         'password',
+        'is_admin',
+
     ];
 
     /**
@@ -46,11 +48,18 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'is_admin' => 'boolean',
+
     ];
 
     public function conversations()
     {
         return $this->hasMany(Conversation::class, 'user_one_id')
             ->orWhere('user_two_id', $this->id);
+    }
+
+    public function isAdmin()
+    {
+        return $this->is_admin == 1;
     }
 }

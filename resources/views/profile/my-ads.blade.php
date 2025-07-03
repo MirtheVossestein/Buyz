@@ -3,6 +3,12 @@
 @section('title', 'Mijn advertenties')
 
 @section('content')
+    @php
+        $soldAds = $ads->where('status', 'verkocht');
+        $activeAds = $ads->whereIn('status', ['te_koop', 'gereserveerd']);
+
+    @endphp
+
     <h1 class="mb-4">Mijn advertenties</h1>
 
     <a href="{{ route('ads.create') }}" class="btn btn-success mb-4">Nieuwe advertentie plaatsen</a>
@@ -10,18 +16,24 @@
     @if ($ads->isEmpty())
         <p>Je hebt nog geen advertenties geplaatst.</p>
     @else
-        <table class="table table-striped">
+        <h2 class="mt-5 mb-3">Advertenties - Actieve producten</h2>
+
+        <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>Advertenties</th>
+                    <th>Advertentie</th>
                     <th>Status</th>
-                    <th class="text-end">Wijzigingen</th>
+                    <th>Wijzigingen</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($ads as $ad)
+                @foreach ($activeAds as $ad)
                     <tr>
-                        <td>{{ $ad->title }}</td>
+                        <td>
+                            <a href="{{ route('ads.show', $ad->id) }}">
+                                {{ $ad->title }}
+                            </a>
+                        </td>
                         <td>{{ $ad->status }} </td>
                         <td class="text-end">
                             <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
@@ -35,7 +47,6 @@
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-danger">Verwijderen</button>
                             </form>
-                             <!-- Edit modal -->
                             <div class="modal fade" id="editModal-{{ $ad->id }}" tabindex="-1"
                                 aria-labelledby="editModalLabel-{{ $ad->id }}" aria-hidden="true">
                                 <div class="modal-dialog">
@@ -87,6 +98,22 @@
                                                 </div>
 
                                                 <div class="mb-3">
+                                                    <label for="status-{{ $ad->id }}">Status</label>
+                                                    <select name="status" id="status-{{ $ad->id }}"
+                                                        class="form-select" required>
+                                                        <option value="te_koop"
+                                                            {{ old('status', $ad->status) === 'te_koop' ? 'selected' : '' }}>
+                                                            Te koop</option>
+                                                        <option value="gereserveerd"
+                                                            {{ old('status', $ad->status) === 'gereserveerd' ? 'selected' : '' }}>
+                                                            Gereserveerd</option>
+                                                        <option value="verkocht"
+                                                            {{ old('status', $ad->status) === 'verkocht' ? 'selected' : '' }}>
+                                                            Verkocht</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="mb-3">
                                                     <label for="images-{{ $ad->id }}">Upload nieuwe foto's
                                                         (optioneel)
                                                     </label>
@@ -112,4 +139,38 @@
 
         </table>
     @endif
+
+    @if ($soldAds->isNotEmpty())
+
+        <h2 class="mt-5 mb-3">Advertenties - Verkochte producten</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Advertentie</th>
+                    <th>Prijs</th>
+                    <th>Verkocht op</th>
+                    <th>Verkocht aan</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($soldAds as $ad)
+                    <tr>
+                        <td> <a href="{{ route('ads.show', $ad->id) }}">
+                                {{ $ad->title }}
+                            </a> </td>
+                        <td>€{{ number_format($ad->price, 2, ',', '.') }}</td>
+                        <td>{{ $ad->updated_at->format('d-m-Y') }}</td>
+                        @if ($ad->status === 'verkocht' && $ad->buyer)
+                            <td>{{ $ad->buyer->first_name }} {{ $ad->buyer->last_name }}</td>
+                        @else
+                            <td>Onbekend</td>
+                        @endif
+                    </tr>
+                @endforeach
+
+            </tbody>
+        </table>
+    @endif
+
 @endsection

@@ -9,7 +9,7 @@ class Conversation extends Model
     protected $fillable = [
         'user_one_id',
         'user_two_id',
-        'ad_id', 
+        'ad_id',
     ];
 
     public function messages()
@@ -31,6 +31,18 @@ class Conversation extends Model
     {
         return $this->belongsTo(Ad::class);
     }
+
+
+    public function participants()
+    {
+        $senderIds = $this->messages()->pluck('sender_id')->unique();
+        $receiverIds = $this->messages()->pluck('receiver_id')->unique();
+
+        $participantIds = $senderIds->merge($receiverIds)->unique();
+
+        return User::whereIn('id', $participantIds)->get();
+    }
+
 
 
 }
