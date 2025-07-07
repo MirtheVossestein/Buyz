@@ -37,6 +37,7 @@
                 <input type="number" name="price_max" placeholder="Max prijs" value="{{ request('price_max') }}"
                     class="mb-2 w-full rounded border px-3 py-1" />
 
+
                 <select name="sort_price" class="mb-2 w-full rounded border px-3 py-1">
                     <option value="">Sorteer op prijs</option>
                     <option value="asc" {{ request('sort_price') == 'asc' ? 'selected' : '' }}>Laag naar Hoog</option>
@@ -44,7 +45,7 @@
                 </select>
 
                 <button type="submit"
-                    class="bg-blue-600 text-white px-4 py-2 rounded w-full hover:bg-blue-700 transition">Filteren</button>
+                    class="bg-[#00A9A3] text-white px-4 py-2 rounded w-full  hover:bg-[#019A95] transition">Filteren</button>
             </form>
         </aside>
 

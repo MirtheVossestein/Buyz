@@ -8,15 +8,16 @@
 
     <title>@yield('title')</title>
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 
     @vite('resources/css/app.css')
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="icon" href="{{ asset(path: 'favicon.ico') }}" type="image/x-icon">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 
 </head>
 @if (!request()->cookie('cookies_accepted'))
@@ -33,7 +34,7 @@
 
                 <form method="POST" action="{{ route('cookie.accept') }}">
                     @csrf
-                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded">
+                    <button type="submit" class="bg-[#00A9A3] hover:bg-[#019A95] text-white px-4 py-2 rounded">
                         Akkoord
                     </button>
                 </form>
@@ -42,41 +43,48 @@
     </div>
 @endif
 
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
 <body>
-    <nav class="w-full h-[5rem] bg-[#00a9a3] flex items-center justify-between px-4">
-        <div class="flex items-center">
+    @php
+        $isHome = Route::currentRouteName() === 'home';
+    @endphp
+
+    <nav
+        class="w-full h-[6rem] flex items-center justify-between px-4 {{ $isHome ? 'absolute' : 'relative' }} top-0 left-0 z-50 bg-transparent">
+        <div class="logo-container relative">
             <a href="{{ route('home') }}">
-                <img src="{{ asset('/images/logo1.svg') }}" alt="Logo" class="h-[5rem] w-[5rem] object-contain">
+                <img src="{{ asset('/images/buyz-logo4.svg') }}" alt="Logo"
+                    class="h-[8rem] w-[17rem] object-contain ">
             </a>
         </div>
 
-        <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-4 text-[15px] font-bold  {{ $isHome ? 'text-white' : 'text-[#00A9A3]' }}">
             @if (Auth::check() && auth()->user()->is_admin)
-                <a href="{{ route('admin.dashboard') }}" class="text-black px-4">Admin Dashboard</a>
+                <a href="{{ route('admin.dashboard') }}" class="text-white px-4">ADMIN DASHBOARD</a>
             @endif
 
-            <a href="{{ route('ads.index') }}" class="text-black px-4">Advertenties</a>
-            <a href="{{ route('contact') }}" class="text-black px-4">Contact</a>
+            <a href="{{ route('ads.index') }}" class=" px-4 ">ADVERTENTIES</a>
+            <a href="{{ route('contact') }}" class=" px-4">CONTACT</a>
 
             @if (Auth::check())
                 <div class="relative">
-                    <button id="dropdownButton" class="text-black px-4">Profiel ▼</button>
+                    <button id="dropdownButton" class=" px-4">PROFIEL ▼</button>
                     <div id="dropdownMenu"
-                        class="hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 absolute right-0 top-10">
-                        <ul class="py-2 text-sm text-gray-700">
-                            <li><a href="{{ route('profile.show') }}" class="block py-2 hover:bg-gray-100">Mijn
-                                    profiel</a></li>
-                            <li><a href="{{ route('profile.ads') }}" class="block py-2 hover:bg-gray-100">Mijn
-                                    advertenties</a></li>
-                            <li><a href="{{ route('profile.messages') }}" class="block py-2 hover:bg-gray-100">Mijn
+                        class="hidden  divide-y divide-gray-100 rounded-lg shadow w-44 absolute right-0 top-10">
+                        <ul class="py-2 text-sm 'text-white' : 'text-[#F5BA36]' }}">
+                            <li><a href="{{ route('profile.show') }}" class="block py-2 ">
+                                    Mijn profiel</a></li>
+                            <li><a href="{{ route('profile.ads') }}" class="block py-2 ">
+                                    Mijn advertenties</a></li>
+                            <li><a href="{{ route('profile.messages') }}" class="block py-2 ">Mijn
                                     berichten</a></li>
-                            <li><a href="{{ route('profile.reviews.index') }}"
-                                    class="block py-2 hover:bg-gray-100">Mijn
+                            <li><a href="{{ route('profile.reviews.index') }}" class="block py-2 ">Mijn
                                     reviews</a></li>
                             <li>
                                 <form action="{{ route('logout') }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="block py-2 hover:bg-gray-100 w-full text-left">Log
+                                    <button type="submit" class="block py-2  w-full text-left">Log
                                         uit</button>
                                 </form>
                             </li>
@@ -84,14 +92,18 @@
                     </div>
                 </div>
             @else
-                <a href="{{ route('login') }}" class="text-black px-4">Inloggen</a>
+                <a href="{{ route('login') }}" class="text-sm  }} px-4">LOGIN</a>
             @endif
         </div>
     </nav>
 
-    <div class="container mx-auto mt-4">
+    @if (Route::currentRouteName() !== 'home')
+        <div class="container mx-auto mt-4">
+            @yield('content')
+        </div>
+    @else
         @yield('content')
-    </div>
+    @endif
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {

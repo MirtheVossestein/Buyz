@@ -48,7 +48,7 @@
 
         <div class="mb-3">
 
-            <button type="submit" class="btn btn-success mb-4">Advertentie toevoegen</button>
+            <button type="submit" class="bg-[#00A9A3] hover:bg-[#019A95] text-white px-4 py-2 rounded mb-4">Advertentie toevoegen</button>
         </div>
     </form>
 @endsection

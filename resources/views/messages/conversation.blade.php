@@ -31,7 +31,7 @@
                 </option>
             </select>
 
-            <button type="submit" class="btn btn-primary mt-3">Status bijwerken</button>
+            <button type="submit" class="mt-4 bg-[#00A9A3] text-white px-4 py-2 rounded  hover:bg-[#019A95] transition ">Status bijwerken</button>
         </form>
     @endif
 
@@ -57,7 +57,7 @@
                 <label for="comment">Commentaar:</label>
                 <textarea name="comment" id="comment" rows="4" class="block w-full border rounded p-2 mb-2"></textarea>
 
-                <button type="submit" class="btn btn-primary">Review plaatsen</button>
+                <button type="submit" class="bg-[#00A9A3] text-white px-4 py-2 rounded w-full  hover:bg-[#019A95] transition">Review plaatsen</button>
             </form>
         </div>
     @endif

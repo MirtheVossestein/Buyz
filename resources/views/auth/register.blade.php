@@ -80,7 +80,7 @@
             </div>
 
             <button type="submit"
-                class="p-3 hover:bg-[#f5ba36] text-white  bg-[#00a9a3] rounded transition-all cursor-pointer  w-full font-semibold">
+                class="p-3 text-white  bg-[#F5BA36] hover:bg-[#F5B21D] rounded transition-all cursor-pointer  w-full font-semibold">
                 Registreer
             </button>
 

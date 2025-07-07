@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="max-w-3xl mx-auto">
+    <div class="max-w-3xl ">
         <h1 class="text-2xl font-bold mb-6">Mijn reviews</h1>
 
         @forelse ($reviews as $review)

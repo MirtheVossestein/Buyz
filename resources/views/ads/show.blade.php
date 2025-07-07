@@ -12,12 +12,12 @@
             Deze advertentie is gereserveerd.
         </p>
     @endif
-    {{-- Admin panel  --}}
+    {{-- admin panel voor ads --}}
     <div class="flex flex-col md:flex-row gap-8">
         <div class="w-3/4 bg-gray-100 p-3 rounded-xl shadow-md">
             @if (auth()->user()?->is_admin)
                 <div class="mb-4 flex gap-4">
-                    <button type="button" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    <button type="button" class="bg-[#00A9A3] hover:bg-[#019A95] text-white px-4 py-2 rounded "
                         data-bs-toggle="modal" data-bs-target="#editModal-{{ $ad->id }}">
                         Wijzigen
                     </button>
@@ -27,7 +27,7 @@
                         @csrf
                         @method('DELETE')
                         <button type="submit"
-                            class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Verwijderen</button>
+                            class="bg-[#F5BA36] hover:bg-[#F5B21D] text-white px-4 py-2 rounded ">Verwijderen</button>
                     </form>
                 </div>
 
@@ -108,7 +108,7 @@
                 </div>
             @endif
 
-
+            {{-- Weergaven klant/eigenaar ad --}}
             <h1 class="text-3xl font-bold mb-4">{{ $ad->title }}</h1>
 
             <div class="flex flex-col md:flex-row gap-4">
@@ -167,8 +167,10 @@
                 </p>
                 <p class=""> {{ $user->phone }}</p>
 
-                {{-- Kaartje locatie verkoper --}}
-
+                <div class="mt-4">
+                    <p class="text-md font-semibold mb-2">Globale locatie verkoper</p>
+                    <div id="user-map" style="height: 300px;" class="rounded shadow"></div>
+                </div>
                 <div class="mt-6">
                     <p class="text-2xl font-semibold mb-4">Reviews van klanten over deze verkoper</p>
 
@@ -216,19 +218,65 @@
                         </div>
                     @endif
                 </div>
-            </div>
-            <div class="">
                 <div class="">
                     @if ($ad->status !== 'verkocht')
-                        <a href="{{ route('ads.buy', $ad->id) }}" class="btn btn-success w-full mb-4">Vraag</a>
+                        <a href="{{ route('ads.buy', $ad->id) }}"
+                            class="block w-full bg-[#00A9A3] hover:bg-[#019A95] text-white py-2 rounded mb-4 text-center">
+                            Vraag
+                        </a>
                     @endif
                 </div>
             </div>
-
-
         </div>
 
 
+
+    </div>
+
+
     </div>
     </div>
+    {{-- Map locatie --}}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            const mapElement = document.getElementById('user-map');
+
+            if (!mapElement) return;
+
+            const postcode = "{{ $user->zipcode }}";
+            if (!postcode) return;
+
+            try {
+                const response = await fetch(
+                    `https://nominatim.openstreetmap.org/search?postalcode=${postcode}&country=Netherlands&format=json&limit=1`
+                );
+                const data = await response.json();
+
+                if (data.length > 0) {
+                    const lat = data[0].lat;
+                    const lon = data[0].lon;
+
+                    const map = L.map('user-map').setView([lat, lon], 13);
+
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; OpenStreetMap contributors'
+                    }).addTo(map);
+
+                    L.circleMarker([lat, lon], {
+                        color: 'red',
+                        radius: 20,
+                        fillOpacity: 0.8
+                    }).addTo(map).bindPopup("Locatie verkoper (globaal)");
+                } else {
+                    mapElement.innerHTML = "<p>Locatie niet gevonden op basis van postcode.</p>";
+                }
+            } catch (error) {
+                mapElement.innerHTML = "<p>Fout bij laden van kaart.</p>";
+            }
+        });
+    </script>
+
 @endsection

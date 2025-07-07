@@ -60,12 +60,12 @@
                 <form action="{{ route('ads.messages.store', $ad) }}" method="POST">
                     @csrf
                     <textarea name="content" required></textarea>
-                    <@auth <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Stuur bericht</button>
+                    <@auth <button type="submit" class="bg-[#00A9A3] hover:bg-[#019A95] text-white px-4 py-2 rounded">Stuur bericht</button>
                         @endauth
 
                         @guest
                             <button type="button" onclick="window.location='{{ route('login') }}'"
-                                class="bg-blue-600 text-white px-4 py-2 rounded">
+                                class="bg-[#00A9A3] hover:bg-[#019A95] text-white px-4 py-2 rounded ">
                                 Stuur bericht
                             </button>
                         @endguest

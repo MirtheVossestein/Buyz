@@ -14,8 +14,7 @@
         <p><strong>Stad:</strong> {{ Auth::user()->city ?? 'Niet ingevuld' }}</p>
     </div>
 
-    {{-- Wijzig-knop --}}
-    <button class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+    <button class="mt-4 bg-[#00A9A3] text-white px-4 py-2 rounded  hover:bg-[#019A95] transition" data-bs-toggle="modal" data-bs-target="#editProfileModal">
         Wijzig gegevens
     </button>
 

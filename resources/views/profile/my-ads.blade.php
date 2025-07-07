@@ -11,7 +11,7 @@
 
     <h1 class="mb-4">Mijn advertenties</h1>
 
-    <a href="{{ route('ads.create') }}" class="btn btn-success mb-4">Nieuwe advertentie plaatsen</a>
+    <a href="{{ route('ads.create') }}" class="bg-[#00A9A3] text-white px-4 py-2 rounded w-full  hover:bg-[#019A95] transition mb-4">Nieuwe advertentie plaatsen</a>
 
     @if ($ads->isEmpty())
         <p>Je hebt nog geen advertenties geplaatst.</p>

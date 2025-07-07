@@ -59,7 +59,7 @@
             <div class="flex flex-col">
                 <button
                     type="submit"
-                    class="p-2 hover:bg-[#f5ba36] text-white rounded bg-[#00a9a3] w-full"
+                    class="p-2  text-white rounded bg-[#F5BA36] hover:bg-[#F5B21D] "
                 >
                     Login
                 </button>
