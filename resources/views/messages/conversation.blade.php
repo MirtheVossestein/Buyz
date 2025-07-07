@@ -31,7 +31,9 @@
                 </option>
             </select>
 
-            <button type="submit" class="mt-4 bg-[#00A9A3] text-white px-4 py-2 rounded  hover:bg-[#019A95] transition ">Status bijwerken</button>
+            <button type="submit"
+                class="mt-4 bg-[#00A9A3] text-white px-4 py-2 rounded  hover:bg-[#019A95] transition ">Status
+                bijwerken</button>
         </form>
     @endif
 
@@ -57,30 +59,38 @@
                 <label for="comment">Commentaar:</label>
                 <textarea name="comment" id="comment" rows="4" class="block w-full border rounded p-2 mb-2"></textarea>
 
-                <button type="submit" class="bg-[#00A9A3] text-white px-4 py-2 rounded w-full  hover:bg-[#019A95] transition">Review plaatsen</button>
+                <button type="submit"
+                    class="bg-[#00A9A3] text-white px-4 py-2 rounded w-full  hover:bg-[#019A95] transition">Review
+                    plaatsen</button>
             </form>
         </div>
     @endif
 
-    <div id="chat-messages">
+    <div id="chat-messages" class="p-4 bg-gray-100 rounded-xl overflow-y-auto">
         @foreach ($conversation->messages as $message)
-            <div class="{{ $message->sender_id === auth()->id() ? 'text-end' : 'text-start' }} group relative mb-3">
-                <p>
-                    <strong>
-                        {{ $message->sender_id === auth()->id() ? 'Jij' : $message->sender->first_name . ' ' . $message->sender->last_name }}
-                    </strong>: {{ $message->content }}
-                </p>
-                <small>{{ $message->created_at->diffForHumans() }}</small>
+            <div class="mb-4 flex {{ $message->sender_id === auth()->id() ? 'justify-end' : 'justify-start' }}">
+                <div
+                    class="max-w-xs md:max-w-md px-4 py-2 rounded-2xl shadow-md relative
+        {{ $message->sender_id === auth()->id()
+            ? 'bg-[#f5cc6e] text-right rounded-br-none'
+            : 'bg-white text-left rounded-bl-none border' }}">
 
-                @if ($message->sender_id === auth()->id())
-                    <form method="POST" action="{{ route('messages.destroy', $message->id) }}"
-                        onsubmit="return confirm('Weet je zeker dat je dit bericht wilt verwijderen?')"
-                        class="absolute top-0 right-0">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="text-red-600 opacity-50 mt-3 text-sm">Verwijderen</button>
-                    </form>
-                @endif
+                    <p class="text-sm text-gray-800">
+                        <strong>{{ $message->sender_id === auth()->id() ? 'Jij' : $message->sender->first_name }}</strong><br>
+                        {{ $message->content }}
+                    </p>
+                    <small class="text-gray-500 text-xs block mt-1">{{ $message->created_at->diffForHumans() }}</small>
+
+                    @if ($message->sender_id === auth()->id())
+                        <form method="POST" action="{{ route('messages.destroy', $message->id) }}"
+                            onsubmit="return confirm('Weet je zeker dat je dit bericht wilt verwijderen?')"
+                            class="absolute top-1 right-2 text-xs text-red-500 hover:text-red-700">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit">✕</button>
+                        </form>
+                    @endif
+                </div>
             </div>
         @endforeach
     </div>
@@ -89,35 +99,67 @@
 
     <form method="POST" action="{{ route('conversations.messages.store', $conversation->id) }}">
         @csrf
-        <textarea name="content" rows="3" required class="w-full border p-2 mt-4" placeholder="Typ een bericht..."></textarea>
-        <button type="submit" class="btn btn-primary mt-2">Verstuur</button>
+        <textarea name="content" rows="3" required class="w-full border rounded-xl p-2 mt-4" placeholder="Typ een bericht..."></textarea>
+        <button type="submit" class="bg-[#00A9A3] hover:bg-[#019A95] text-white mb-4 px-4 py-2 rounded">Verstuur</button>
     </form>
 
-    @push('scripts')
-        <script>
-            const conversationId = "{{ $conversation->id }}";
+   @push('scripts')
+<script>
+    const conversationId = "{{ $conversation->id }}";
+    const authId = {{ auth()->id() }};
 
-            function fetchMessages() {
-                fetch(`/conversations/${conversationId}/messages`)
-                    .then(response => response.json())
-                    .then(data => {
-                        const container = document.getElementById('chat-messages');
-                        container.innerHTML = '';
+    function fetchMessages() {
+        fetch(`/conversations/${conversationId}/messages`)
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('chat-messages');
+                container.innerHTML = '';
 
-                        data.forEach(msg => {
-                            const wrapper = document.createElement('div');
-                            wrapper.className = (msg.sender_id == {{ auth()->id() }}) ?
-                                'text-end group relative mb-3' : 'text-start group relative mb-3';
-                            wrapper.innerHTML = `
-                        <p><strong>${msg.sender_id == {{ auth()->id() }} ? 'Jij' : msg.sender.first_name + ' ' + msg.sender.last_name}</strong>: ${msg.content}</p>
-                        <small>${new Date(msg.created_at).toLocaleString()}</small>
+                data.forEach(msg => {
+                    const isSender = msg.sender_id === authId;
+
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'mb-4 flex ' + (isSender ? 'justify-end' : 'justify-start');
+
+                    const bubble = document.createElement('div');
+                    bubble.className =
+                        'max-w-xs md:max-w-md px-4 py-2 rounded-2xl shadow-md relative ' +
+                        (isSender
+                            ? 'bg-[#f5cc6e] text-right rounded-br-none'
+                            : 'bg-white text-left rounded-bl-none border');
+
+                    bubble.innerHTML = `
+                        <p class="text-sm text-gray-800">
+                            <strong>${isSender ? 'Jij' : msg.sender.first_name}</strong><br>
+                            ${msg.content}
+                        </p>
+                        <small class="text-gray-500 text-xs block mt-1">${new Date(msg.created_at).toLocaleString()}</small>
                     `;
-                            container.appendChild(wrapper);
-                        });
-                    });
-            }
 
-            setInterval(fetchMessages, 5000);
-        </script>
-    @endpush
+                    if (isSender) {
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = `/messages/${msg.id}`;
+                        form.onsubmit = () => confirm('Weet je zeker dat je dit bericht wilt verwijderen?');
+                        form.className = 'absolute top-1 right-2 text-xs text-red-500 hover:text-red-700';
+
+                        form.innerHTML = `
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit">✕</button>
+                        `;
+
+                        bubble.appendChild(form);
+                    }
+
+                    wrapper.appendChild(bubble);
+                    container.appendChild(wrapper);
+                });
+            });
+    }
+
+    setInterval(fetchMessages, 5000);
+</script>
+@endpush
+
 @endsection

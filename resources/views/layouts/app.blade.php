@@ -61,7 +61,7 @@
 
         <div class="flex items-center space-x-4 text-[15px] font-bold  {{ $isHome ? 'text-white' : 'text-[#00A9A3]' }}">
             @if (Auth::check() && auth()->user()->is_admin)
-                <a href="{{ route('admin.dashboard') }}" class="text-white px-4">ADMIN DASHBOARD</a>
+                <a href="{{ route('admin.dashboard') }}" class="text-[#00A9A3] px-4">ADMIN DASHBOARD</a>
             @endif
 
             <a href="{{ route('ads.index') }}" class=" px-4 ">ADVERTENTIES</a>

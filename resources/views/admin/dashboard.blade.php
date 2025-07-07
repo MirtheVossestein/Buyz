@@ -11,7 +11,6 @@
         <p style="color: red;">{{ session('error') }}</p>
     @endif
 
-    <!-- Nav tabs -->
     <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin" type="button"
@@ -27,10 +26,9 @@
         </li>
     </ul>
 
-    {{-- Tabs --}}
+    {{-- Alle verscjhillende tabs --}}
     <div class="tab-content" id="dashboardTabsContent">
         <div class="tab-pane fade show active" id="admin" role="tabpanel" aria-labelledby="admin-tab">
-            {{-- Admin tab --}}
             <h2>Actieve Admins</h2>
             <table class="table table-bordered">
                 <thead>
@@ -84,7 +82,6 @@
             </table>
         </div>
 
-        {{-- Reviews tab --}}
         <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
             <h2>Geschreven Reviews</h2>
             <table class="table table-bordered">
@@ -167,7 +164,6 @@
                 </tbody>
             </table>
         </div>
-        {{-- Stats tab --}}
         <div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="stats-tab">
             <h2>Statistieken</h2>
 

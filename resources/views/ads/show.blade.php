@@ -108,7 +108,7 @@
                 </div>
             @endif
 
-            {{-- Weergaven klant/eigenaar ad --}}
+            {{-- weergaven klant/eigenaar ad --}}
             <h1 class="text-3xl font-bold mb-4">{{ $ad->title }}</h1>
 
             <div class="flex flex-col md:flex-row gap-4">
@@ -153,9 +153,21 @@
                     <p class="mb-6 ">{{ $ad->description }}</p>
                 </div>
 
-                <div class="w-1/3 ">
+                <div class="w-1/3 flex flex-col justify-between">
                     <p class="text-2xl font-semibold">€ {{ number_format($ad->price, 2, ',', '.') }}</p>
+
+                    <div class="mt-auto">
+                        @if ($ad->status !== 'verkocht')
+                            <p class="text-md italic">Vraag over dit product? Stel hem hieronder direct aan de verkoper.
+                            </p>
+                            <a href="{{ route('ads.buy', $ad->id) }}"
+                                class="block w-full bg-[#00A9A3] hover:bg-[#019A95] text-white py-2 rounded mb-26 text-center">
+                                Vraag
+                            </a>
+                        @endif
+                    </div>
                 </div>
+
             </div>
         </div>
 
@@ -171,7 +183,7 @@
                     <p class="text-md font-semibold mb-2">Globale locatie verkoper</p>
                     <div id="user-map" style="height: 300px;" class="rounded shadow"></div>
                 </div>
-                <div class="mt-6">
+                <div class="mt-16">
                     <p class="text-2xl font-semibold mb-4">Reviews van klanten over deze verkoper</p>
 
                     @if ($reviews->isEmpty())
@@ -218,14 +230,7 @@
                         </div>
                     @endif
                 </div>
-                <div class="">
-                    @if ($ad->status !== 'verkocht')
-                        <a href="{{ route('ads.buy', $ad->id) }}"
-                            class="block w-full bg-[#00A9A3] hover:bg-[#019A95] text-white py-2 rounded mb-4 text-center">
-                            Vraag
-                        </a>
-                    @endif
-                </div>
+
             </div>
         </div>
 
@@ -236,7 +241,6 @@
 
     </div>
     </div>
-    {{-- Map locatie --}}
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 

@@ -65,12 +65,23 @@ class ReviewController extends Controller
 
     public function index()
     {
-        $reviews = Review::where('reviewer_id', auth()->id())
-            ->with(['ad', 'reviewee']) 
+        $userId = auth()->id();
+
+
+        $writtenReviews = Review::with(['reviewee', 'ad'])
+            ->where('reviewer_id', $userId)
             ->latest()
             ->get();
 
-        return view('profile.my-reviews', compact('reviews'));
+        $receivedReviews = Review::with(['reviewer', 'ad'])
+            ->where('reviewee_id', $userId)
+            ->latest()
+            ->get();
+
+        return view('profile.my-reviews', [
+            'writtenReviews' => $writtenReviews,
+            'receivedReviews' => $receivedReviews,
+        ]);
     }
 
 

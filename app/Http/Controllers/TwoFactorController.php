@@ -9,7 +9,7 @@ class TwoFactorController extends Controller
 {
     public function index()
     {
-        return view('auth.2fa'); // Form waar je de code invult
+        return view('auth.2fa'); 
     }
 
     public function store(Request $request)
@@ -25,18 +25,17 @@ class TwoFactorController extends Controller
             return redirect()->route('login')->withErrors(['code' => 'Gebruiker niet gevonden.']);
         }
 
-        // Check of code klopt én niet verlopen is
+ 
         if (
             $request->code == $user->two_factor_code &&
             now()->lessThan($user->two_factor_expires_at)
         ) {
-            // Opschonen
             $user->update([
                 'two_factor_code' => null,
                 'two_factor_expires_at' => null,
             ]);
 
-            Auth::login($user); // Log gebruiker definitief in
+            Auth::login($user); 
             session()->forget('2fa:user:id');
 
             return redirect()->intended(route('home'));

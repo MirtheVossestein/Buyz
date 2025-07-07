@@ -40,39 +40,39 @@ class AdminController extends Controller
 
 
 
-   public function adminDashboard()
-{
-    $admins = User::where('is_admin', 1)->get();
-    $users = User::where('is_admin', 0)->get();
-    $reviews = Review::with(['reviewer', 'reviewee'])->latest()->get();
+    public function adminDashboard()
+    {
+        $admins = User::where('is_admin', 1)->get();
+        $users = User::where('is_admin', 0)->get();
+        $reviews = Review::with(['reviewer', 'reviewee'])->latest()->get();
 
-    $adsPerMonth = Ad::selectRaw("strftime('%m', created_at) as month, COUNT(*) as total")
-        ->whereYear('created_at', now()->year)
-        ->groupBy('month')
-        ->pluck('total', 'month');
+        $adsPerMonth = Ad::selectRaw("strftime('%m', created_at) as month, COUNT(*) as total")
+            ->whereYear('created_at', now()->year)
+            ->groupBy('month')
+            ->pluck('total', 'month');
 
-    $usersPerMonth = User::selectRaw("strftime('%m', created_at) as month, COUNT(*) as total")
-        ->whereYear('created_at', now()->year)
-        ->groupBy('month')
-        ->pluck('total', 'month');
+        $usersPerMonth = User::selectRaw("strftime('%m', created_at) as month, COUNT(*) as total")
+            ->whereYear('created_at', now()->year)
+            ->groupBy('month')
+            ->pluck('total', 'month');
 
-    $adsData = [];
-    $usersData = [];
+        $adsData = [];
+        $usersData = [];
 
-    for ($i = 1; $i <= 12; $i++) {
-        $month = str_pad($i, 2, '0', STR_PAD_LEFT); // '01', '02', etc.
-        $adsData[] = $adsPerMonth[$month] ?? 0;
-        $usersData[] = $usersPerMonth[$month] ?? 0;
+        for ($i = 1; $i <= 12; $i++) {
+            $month = str_pad($i, 2, '0', STR_PAD_LEFT); // '01', '02', etc.
+            $adsData[] = $adsPerMonth[$month] ?? 0;
+            $usersData[] = $usersPerMonth[$month] ?? 0;
+        }
+
+        return view('admin.dashboard', [
+            'admins' => $admins,
+            'users' => $users,
+            'reviews' => $reviews,
+            'adsData' => $adsData,
+            'usersData' => $usersData,
+        ]);
     }
-
-    return view('admin.dashboard', [
-        'admins' => $admins,
-        'users' => $users,
-        'reviews' => $reviews,
-        'adsData' => $adsData,
-        'usersData' => $usersData,
-    ]);
-}
 
 
     public function adminIndex()

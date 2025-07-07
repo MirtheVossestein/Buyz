@@ -5,9 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Ad;
 use App\Models\Category;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\AdQuestionMail;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Message;
 use App\Models\Review;
 

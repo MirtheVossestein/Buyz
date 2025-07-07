@@ -3,7 +3,7 @@
 @section('title', 'Profiel')
 
 @section('content')
-    <h1 class="text-2xl font-bold mb-4">Profiel</h1>
+    <h1 class="text-2xl font-bold mb-4">Mijn profiel</h1>
 
     <div class="bg-white shadow-md rounded p-4 max-w-md">
         <p><strong>Naam:</strong> {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</p>
@@ -18,7 +18,6 @@
         Wijzig gegevens
     </button>
 
-    {{-- Wijziggegevens-Modal --}}
     <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">

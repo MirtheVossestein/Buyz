@@ -114,32 +114,18 @@ class MessageController extends Controller
         return back()->with('success', 'Bericht verwijderd.');
     }
 
-    // notificatie  berichten
-    public function openConversation($conversationId)
-{
-    $conversation = Conversation::findOrFail($conversationId);
-
-    $conversation->messages()
-        ->where('receiver_id', auth()->id())  
-        ->where('is_read', 0)                  
-        ->update(['is_read' => 1]);
-
-    return view('conversations.show', compact('conversation'));
-}
 
 
 public function sendReviewInvite(Request $request)
 {
-    $conversationId = 2;      // Bijvoorbeeld uit $request of logica
-    $senderId = auth()->id(); // Of 1 als vaste waarde
-    $receiverId = $request->input('receiver_id'); // Ontvanger ophalen uit de request
+    $conversationId = 2;      
+    $senderId = auth()->id(); 
+    $receiverId = $request->input('receiver_id'); 
 
-    // Check of receiver_id bestaat!
     if (!$receiverId) {
         return response()->json(['error' => 'Receiver ID is verplicht'], 400);
     }
 
-    // Bericht maken
     Message::create([
         'conversation_id' => $conversationId,
         'sender_id' => $senderId,
@@ -152,7 +138,6 @@ public function sendReviewInvite(Request $request)
 
 
 
-// conversation autoreloader
 public function fetch(Conversation $conversation)
 {
     $messages = $conversation->messages()->with('sender')->latest()->take(50)->get()->reverse()->values();
