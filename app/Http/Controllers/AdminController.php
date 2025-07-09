@@ -60,7 +60,7 @@ class AdminController extends Controller
         $usersData = [];
 
         for ($i = 1; $i <= 12; $i++) {
-            $month = str_pad($i, 2, '0', STR_PAD_LEFT); // '01', '02', etc.
+            $month = str_pad($i, 2, '0', STR_PAD_LEFT); 
             $adsData[] = $adsPerMonth[$month] ?? 0;
             $usersData[] = $usersPerMonth[$month] ?? 0;
         }
